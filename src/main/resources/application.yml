@@ -1,6 +1,11 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/mybatis?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&serverTimezone=GMT%2B8
+    url: jdbc:mysql://localhost:3306/discuss?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&serverTimezone=GMT%2B8
     username: root
     password: zhen092510
     driver-class-name: com.mysql.cj.jdbc.Driver
+mybatis:
+  type-aliases-package: com.mright.discuss.platform.entity.po
+  mapper-locations: classpath:mapper/*.xml
+server:
+  port: 9093
