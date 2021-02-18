@@ -31,6 +31,7 @@ public class UserController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @PreAuthorize("hasAuthority('sys:user:view')")
     @GetMapping("/queryById")
     public CommonResponse<User> queryById(Integer id) {
         if (id == null) {
