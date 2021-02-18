@@ -9,6 +9,7 @@ import com.mright.discuss.platform.entity.dto.LoginBean;
 import com.mright.discuss.platform.entity.po.User;
 import com.mright.discuss.platform.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,5 +52,23 @@ public class UserController {
         JwtAuthenticatioToken token = SecurityUtils.login(request, username, password, authenticationManager);
 
         return HttpResult.ok(token);
+    }
+
+    @PreAuthorize("hasAuthority('sys:user:view')")
+    @GetMapping(value="/findAll")
+    public HttpResult findAll() {
+        return HttpResult.ok("the findAll service is called success.");
+    }
+
+    @PreAuthorize("hasAuthority('sys:user:edit')")
+    @GetMapping(value="/edit")
+    public HttpResult edit() {
+        return HttpResult.ok("the edit service is called success.");
+    }
+
+    @PreAuthorize("hasAuthority('sys:user:delete')")
+    @GetMapping(value="/delete")
+    public HttpResult delete() {
+        return HttpResult.ok("the delete service is called success.");
     }
 }

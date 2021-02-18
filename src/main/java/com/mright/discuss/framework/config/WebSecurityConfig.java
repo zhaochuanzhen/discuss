@@ -3,6 +3,7 @@ package com.mright.discuss.framework.config;
 import com.mright.discuss.framework.filter.JwtAuthenticationFilter;
 import com.mright.discuss.framework.filter.JwtLoginFilter;
 import com.mright.discuss.framework.security.JwtAuthenticationProvider;
+import com.mright.discuss.platform.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +29,7 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 public class WebSecurityConfig  extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private UserDetailsServiceImpl userDetailsService;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
