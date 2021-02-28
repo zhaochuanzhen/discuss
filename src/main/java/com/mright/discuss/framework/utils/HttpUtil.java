@@ -3,7 +3,12 @@ package com.mright.discuss.framework.utils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -12,15 +17,13 @@ import javax.net.ssl.TrustManager;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -692,17 +695,52 @@ public class HttpUtil {
         return result.toString();
     }
 
-    public static void main(String[] args) {
-        int i = 0;
-        while (true) {
-            try {
-                String result = HttpUtil.get("http://www.woshipm.com/pd/4343957.html", null, 10000, 10000);
-                System.out.println(i++);
-                Thread.sleep(60000);
-            } catch (Exception e) {
-                System.out.println("异常：" + e.getMessage());
-                continue;
+    public static void main(String[] args) throws InterruptedException {
+        // 访问10次
+        for(int count = 1; count < 11000; count++) {
+            AutoVisit(count);
+            Thread.sleep(30000);
+        }
+    }
+
+    public static String randIP() {
+        Random random = new Random(System.currentTimeMillis());
+        return (random.nextInt(255) + 1) + "." + (random.nextInt(255) + 1) + "." + (random.nextInt(255) + 1) + "."
+                + (random.nextInt(255) + 1);
+    }
+
+    public static void AutoVisit(int count) {
+
+        HttpClient httpclient = new HttpClient();
+
+        // 设置HTTP代理IP和端口
+//         httpclient.getHostConfiguration().setProxy("58.252.56.149", 8080);
+        // 代理认证（登录名+密码）
+//         UsernamePasswordCredentials creds = new UsernamePasswordCredentials("root", "123456");
+//         httpclient.getState().setProxyCredentials(AuthScope.ANY, creds);
+        // Get调用
+        GetMethod method = new GetMethod("https://blog.csdn.net/maniacer/article/details/103992198");
+        method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
+                new DefaultHttpMethodRetryHandler(3, false));
+        method.addRequestHeader("x-forwarded-for", randIP());
+        try {
+            int statusCode = httpclient.executeMethod(method);
+            if (statusCode != HttpStatus.OK.value()) {
+                System.out.println(statusCode + ": " + method.getStatusLine());
+            } else {
+                System.out.println("访问" + count + "次！");
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            // 停留3s后再关闭连接
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            method.releaseConnection();
         }
     }
 }
